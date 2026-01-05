@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>旅色筆記 Pro - Travel Palette</title>
+    <!-- 引入 Tailwind CSS 與 Lucide 圖示 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        
+        body {
+            font-family: 'Inter', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+            background-color: #FFFDF0;
+            color: #374151;
+            overflow-x: hidden;
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* 動畫效果 */
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .slide-up { animation: slideUp 0.4s ease-out; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* 導覽按鈕啟動狀態 */
+        .nav-active {
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="pb-36 md:pb-32">
+
+    <!-- 頂部標題 -->
+    <header class="pt-8 md:pt-10 pb-4 md:pb-6 text-center relative max-w-4xl mx-auto flex flex-col items-center px-4">
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-black text-[#FF85A1] tracking-tighter drop-shadow-sm">旅色筆記</h1>
+        <p class="text-[9px] md:text-[10px] text-gray-400 font-bold tracking-[0.3em] md:tracking-[0.4em] mt-1 opacity-60 uppercase">Travel Palette</p>
+        <div class="w-10 md:w-12 h-1 md:h-1.5 bg-[#FFD1A4] rounded-full mt-2 opacity-40"></div>
+        
+        <button class="absolute right-4 md:right-6 top-8 md:top-10 w-9 h-9 md:w-10 md:h-10 bg-white rounded-full shadow-md flex items-center justify-center text-[#FF85A1] border border-gray-100">
+            <i data-lucide="user" class="w-4 h-4 md:w-5 md:h-5"></i>
+        </button>
+    </header>
+
+    <!-- 主內容區 -->
+    <main id="main-content" class="px-4 md:px-6 max-w-4xl mx-auto fade-in">
+        <!-- 內容會由 JavaScript 動態插入 -->
+    </main>
+
+    <!-- 固定懸浮按鈕 (地圖) -->
+    <button id="floating-map-btn" class="fixed bottom-28 md:bottom-28 right-4 md:right-6 w-12 h-12 md:w-14 md:h-14 bg-[#8EC5FC] text-white rounded-full shadow-xl flex items-center justify-center hover:scale-110 active:scale-90 transition-all z-40 border-4 border-white hidden">
+        <i data-lucide="navigation" class="w-6 h-6" fill="currentColor"></i>
+    </button>
+
+    <!-- 底部導覽 -->
+    <nav class="fixed bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 w-[94%] md:w-full max-w-lg bg-white/95 backdrop-blur-lg rounded-[2rem] md:rounded-[2.5rem] p-1.5 md:p-2 shadow-2xl flex justify-between items-center z-50 border border-white/50">
+        <button onclick="switchTab('home')" id="nav-home" class="nav-btn flex flex-col items-center justify-center p-1.5 md:p-2 rounded-xl md:rounded-2xl transition-all flex-1 min-w-0">
+            <i data-lucide="map" class="w-5 h-5"></i>
+            <span class="text-[8px] md:text-[9px] mt-1 font-bold truncate">首頁</span>
+        </button>
+        <button onclick="switchTab('favorite')" id="nav-favorite" class="nav-btn flex flex-col items-center justify-center p-1.5 md:p-2 rounded-xl md:rounded-2xl transition-all flex-1 min-w-0">
+            <i data-lucide="heart" class="w-5 h-5"></i>
+            <span class="text-[8px] md:text-[9px] mt-1 font-bold truncate">收藏</span>
+        </button>
+        <button onclick="switchTab('itinerary')" id="nav-itinerary" class="nav-btn flex flex-col items-center justify-center p-1.5 md:p-2 rounded-xl md:rounded-2xl transition-all flex-1 min-w-0">
+            <i data-lucide="calendar" class="w-5 h-5"></i>
+            <span class="text-[8px] md:text-[9px] mt-1 font-bold truncate">行程</span>
+        </button>
+        <button onclick="switchTab('calorie')" id="nav-calorie" class="nav-btn flex flex-col items-center justify-center p-1.5 md:p-2 rounded-xl md:rounded-2xl transition-all flex-1 min-w-0">
+            <i data-lucide="flame" class="w-5 h-5"></i>
+            <span class="text-[8px] md:text-[9px] mt-1 font-bold truncate">熱量</span>
+        </button>
+        <button onclick="switchTab('journal')" id="nav-journal" class="nav-btn flex flex-col items-center justify-center p-1.5 md:p-2 rounded-xl md:rounded-2xl transition-all flex-1 min-w-0">
+            <i data-lucide="book-open" class="w-5 h-5"></i>
+            <span class="text-[8px] md:text-[9px] mt-1 font-bold truncate">日記</span>
+        </button>
+        <button onclick="switchTab('checklist')" id="nav-checklist" class="nav-btn flex flex-col items-center justify-center p-1.5 md:p-2 rounded-xl md:rounded-2xl transition-all flex-1 min-w-0">
+            <i data-lucide="check-square" class="w-5 h-5"></i>
+            <span class="text-[8px] md:text-[9px] mt-1 font-bold truncate">清單</span>
+        </button>
+    </nav>
+
+    <!-- 地區選擇器彈窗 (隱藏) -->
+    <div id="picker-modal" class="fixed inset-0 bg-black/50 backdrop-blur-md z-[100] items-end justify-center hidden">
+        <!-- 內容動態渲染 -->
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+        import { getFirestore, collection, onSnapshot, addDoc, query, orderBy } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+
+        // --- 全域變數 ---
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'travel-palette-final';
+        
+        let currentUser = null;
+        let activeTab = 'home';
+        let state = {
+            calories: [],
+            myItineraries: [],
+            sharedItineraries: [],
+            journals: [],
+            selectedGuide: null,
+            showAdventure: true
+        };
+
+        // --- 認證流程 ---
+        const initAuth = async () => {
+            try {
+                // 優先使用自定義權杖登入
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("認證初始化失敗:", error);
+            }
+
+            // 監聽身份驗證狀態變更
+            onAuthStateChanged(auth, (user) => {
+                currentUser = user;
+                if (user) {
+                    setupListeners();
+                } else {
+                    console.log("用戶未登入或已登出");
+                }
+            });
+        };
+
+        // --- 數據監聽 ---
+        const setupListeners = () => {
+            if (!currentUser) return;
+
+            const errorCallback = (error) => {
+                console.error("Firestore 監聽錯誤:", error);
+            };
+
+            // 監聽熱量數據
+            onSnapshot(
+                collection(db, 'artifacts', appId, 'users', currentUser.uid, 'calories'), 
+                (snap) => {
+                    state.calories = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    if (activeTab === 'calorie') render();
+                },
+                errorCallback
+            );
+
+            // 監聽日記數據
+            onSnapshot(
+                collection(db, 'artifacts', appId, 'users', currentUser.uid, 'journals'), 
+                (snap) => {
+                    state.journals = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    if (activeTab === 'journal') render();
+                },
+                errorCallback
+            );
+
+            // 監聽個人行程
+            onSnapshot(
+                collection(db, 'artifacts', appId, 'users', currentUser.uid, 'itineraries'), 
+                (snap) => {
+                    state.myItineraries = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    if (activeTab === 'itinerary') render();
+                },
+                errorCallback
+            );
+
+            // 監聽公共共享行程
+            onSnapshot(
+                collection(db, 'artifacts', appId, 'public', 'data', 'shared_itineraries'), 
+                (snap) => {
+                    state.sharedItineraries = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    if (activeTab === 'itinerary') render();
+                },
+                errorCallback
+            );
+        };
+
+        // --- 渲染引擎 ---
+        window.switchTab = (tab) => {
+            activeTab = tab;
+            state.selectedGuide = null;
+            render();
+        };
+
+        window.render = () => {
+            const container = document.getElementById('main-content');
+            const mapBtn = document.getElementById('floating-map-btn');
+            
+            // 更新導覽列樣式
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.className = "nav-btn flex flex-col items-center justify-center p-1.5 md:p-2 rounded-xl md:rounded-2xl transition-all flex-1 min-w-0 text-gray-400 hover:bg-gray-50";
+            });
+            
+            const activeBtn = document.getElementById(`nav-${activeTab}`);
+            const colors = { home: 'bg-[#8EC5FC]', favorite: 'bg-[#FF85A1]', itinerary: 'bg-[#FFA45B]', calorie: 'bg-[#FFCCF9]', journal: 'bg-[#FFD1A4]', checklist: 'bg-[#B2F9B4]' };
+            if (activeBtn) activeBtn.className += ` nav-active ${colors[activeTab]} text-white shadow-lg`;
+
+            // 顯示地圖按鈕
+            if (activeTab === 'home' && !state.selectedGuide) mapBtn.classList.remove('hidden');
+            else mapBtn.classList.add('hidden');
+
+            if (state.selectedGuide) {
+                container.innerHTML = renderGuideDetail();
+            } else {
+                switch (activeTab) {
+                    case 'home': container.innerHTML = renderHome(); break;
+                    case 'calorie': container.innerHTML = renderCalorie(); break;
+                    case 'journal': container.innerHTML = renderJournal(); break;
+                    case 'itinerary': container.innerHTML = renderItinerary(); break;
+                    case 'favorite': container.innerHTML = `<div class="p-10 text-center"><i data-lucide="heart" class="mx-auto text-[#FF85A1] mb-4 opacity-30 w-12 h-12"></i><h3 class="text-lg font-black text-gray-400">收藏夾</h3></div>`; break;
+                    case 'checklist': container.innerHTML = `<div class="p-10 text-center"><i data-lucide="check-square" class="mx-auto text-[#B2F9B4] mb-4 opacity-30 w-12 h-12"></i><h3 class="text-lg font-black text-gray-400">行李清單</h3></div>`; break;
+                }
+            }
+            lucide.createIcons();
+        };
+
+        // --- 各視圖渲染器 ---
+        const renderHome = () => `
+            <div class="space-y-8">
+                <section>
+                    <h3 class="text-lg font-black flex items-center gap-2 mb-4"><div class="w-2 h-6 bg-[#FF85A1] rounded-full"></div>精選推薦</h3>
+                    <div class="flex overflow-x-auto gap-4 pb-4 no-scrollbar -mx-4 px-4 snap-x">
+                        <div class="min-w-[200px] h-64 relative rounded-[2.5rem] overflow-hidden shadow-lg snap-start">
+                            <img src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                            <div class="absolute bottom-5 left-5 text-white">
+                                <span class="text-[10px] bg-white/20 backdrop-blur-md px-2 py-1 rounded-full uppercase font-bold">自然</span>
+                                <p class="text-xl font-black mt-1">嵐山竹林</p>
+                            </div>
+                        </div>
+                        <div class="min-w-[200px] h-64 relative rounded-[2.5rem] overflow-hidden shadow-lg snap-start">
+                            <img src="https://images.unsplash.com/photo-1590559899731-a382839e5549?w=400" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                            <div class="absolute bottom-5 left-5 text-white">
+                                <span class="text-[10px] bg-white/20 backdrop-blur-md px-2 py-1 rounded-full uppercase font-bold">美食</span>
+                                <p class="text-xl font-black mt-1">道頓堀</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                ${state.showAdventure ? `
+                <div class="bg-gradient-to-br from-[#8EC5FC] to-[#E0C3FC] p-6 rounded-[2.5rem] text-white shadow-lg relative overflow-hidden">
+                    <button onclick="state.showAdventure=false; render()" class="absolute top-4 right-4 p-1 hover:bg-white/20 rounded-full transition-colors z-20"><i data-lucide="x" class="w-5 h-5"></i></button>
+                    <div class="relative z-10">
+                        <h2 class="text-2xl font-black italic">準備好冒險了嗎？</h2>
+                        <p class="opacity-90 mb-4 text-sm">點擊下方按鈕快速定位</p>
+                        <button onclick="window.open('https://www.google.com/maps')" class="bg-white text-[#8EC5FC] px-6 py-2 rounded-full font-bold flex items-center gap-2 shadow-lg active:scale-95 transition-all text-sm">
+                            <i data-lucide="navigation" class="w-4 h-4" fill="currentColor"></i> 快速開啟地圖
+                        </button>
+                    </div>
+                    <i data-lucide="map" class="absolute -bottom-4 -right-4 w-24 h-24 opacity-20 transform -rotate-12"></i>
+                </div>` : ''}
+
+                <section>
+                    <h3 class="text-lg font-black mb-4">探索靈感</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div onclick="state.selectedGuide={id:1, title:'人氣景點排行', color:'bg-[#8EC5FC]', img:'🏯'}; render()" class="bg-white p-5 rounded-[2rem] shadow-sm flex items-center gap-5 cursor-pointer hover:shadow-md border border-gray-50">
+                            <div class="w-16 h-16 bg-[#8EC5FC] rounded-2xl flex items-center justify-center text-3xl">🏯</div>
+                            <div class="flex-1">
+                                <span class="text-[10px] font-bold text-gray-300 uppercase tracking-widest">旅遊</span>
+                                <h4 class="font-black text-lg text-gray-700">人氣景點排行</h4>
+                            </div>
+                            <i data-lucide="chevron-right" class="text-gray-200"></i>
+                        </div>
+                        <div onclick="state.selectedGuide={id:2, title:'美食地圖推薦', color:'bg-[#FFCCF9]', img:'🍣'}; render()" class="bg-white p-5 rounded-[2rem] shadow-sm flex items-center gap-5 cursor-pointer hover:shadow-md border border-gray-50">
+                            <div class="w-16 h-16 bg-[#FFCCF9] rounded-2xl flex items-center justify-center text-3xl">🍣</div>
+                            <div class="flex-1">
+                                <span class="text-[10px] font-bold text-gray-300 uppercase tracking-widest">美食</span>
+                                <h4 class="font-black text-lg text-gray-700">美食地圖推薦</h4>
+                            </div>
+                            <i data-lucide="chevron-right" class="text-gray-200"></i>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        `;
+
+        const renderCalorie = () => {
+            const total = state.calories.reduce((sum, item) => sum + item.cal, 0);
+            return `
+            <div class="space-y-6">
+                <div class="bg-[#FFCCF9] p-10 rounded-[3rem] text-center shadow-lg relative overflow-hidden">
+                    <div class="relative z-10">
+                        <p class="text-[#FF85A1] font-black text-xs tracking-widest uppercase mb-1">今日美食扣打</p>
+                        <div class="text-6xl font-black text-white">${total} <span class="text-xl">kcal</span></div>
+                    </div>
+                    <i data-lucide="flame" class="absolute -bottom-10 -left-10 w-48 h-48 text-white opacity-20"></i>
+                </div>
+                <div class="bg-white p-6 rounded-[2rem] border border-gray-50 space-y-4">
+                    <div class="flex flex-col sm:flex-row gap-2.5">
+                        <input id="food-name" class="flex-1 bg-gray-50 p-4 rounded-xl text-sm" placeholder="吃了什麼？">
+                        <input id="food-cal" class="sm:w-24 bg-gray-50 p-4 rounded-xl text-sm" placeholder="Kcal" type="number">
+                    </div>
+                    <button onclick="addCalorie()" class="w-full bg-[#FF85A1] text-white font-black py-4 rounded-xl shadow-lg active:scale-95 transition-all">記錄美味 😋</button>
+                </div>
+                <div class="space-y-2">
+                    ${state.calories.map(item => `
+                        <div class="bg-white/60 p-4 rounded-2xl flex justify-between items-center border border-white text-sm">
+                            <span class="font-bold text-gray-600">${item.name}</span>
+                            <span class="text-[#FF85A1] font-black">${item.cal} kcal</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>`;
+        };
+
+        const renderJournal = () => `
+            <div class="space-y-6">
+                <h3 class="text-2xl font-black text-[#FFA45B]">旅程日記 📖</h3>
+                <div class="bg-white p-6 rounded-[2rem] shadow-sm space-y-4 border border-gray-50">
+                    <textarea id="journal-content" class="w-full min-h-[150px] bg-transparent outline-none text-gray-600 placeholder:text-gray-300 resize-none font-medium" placeholder="今天發生了什麼有趣的事？"></textarea>
+                    <button onclick="addJournal()" class="w-full bg-[#FFA45B] text-white font-black py-4 rounded-2xl shadow-lg">儲存快樂 ✨</button>
+                </div>
+                <div class="space-y-3">
+                    ${state.journals.sort((a,b) => b.time - a.time).map(entry => `
+                        <div class="bg-white p-5 rounded-[2rem] shadow-sm border border-gray-50">
+                            <p class="text-[10px] font-black text-gray-300 mb-2 uppercase tracking-tighter">${entry.date}</p>
+                            <p class="text-gray-600 leading-relaxed font-medium">${entry.content}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>`;
+
+        const renderItinerary = () => `
+            <div class="space-y-6">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-2xl font-black text-[#FFA45B]">行程中心 🗺️</h3>
+                    <button onclick="addItinerary()" class="bg-[#FFA45B] text-white p-3 rounded-2xl shadow-lg"><i data-lucide="plus"></i></button>
+                </div>
+                <div class="space-y-3">
+                    ${state.myItineraries.map(item => `
+                        <div class="bg-white p-5 rounded-[2rem] shadow-sm flex items-center gap-4 border border-gray-50">
+                            <div class="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center text-xl">📌</div>
+                            <div class="flex-1">
+                                <h4 class="font-black text-gray-700">${item.title}</h4>
+                                <p class="text-[10px] text-gray-400 uppercase">${item.date}</p>
+                            </div>
+                            <i data-lucide="chevron-right" class="text-gray-200"></i>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>`;
+
+        const renderGuideDetail = () => `
+            <div class="space-y-6 slide-up">
+                <button onclick="state.selectedGuide=null; render()" class="flex items-center gap-2 text-gray-400 font-bold hover:text-[#FF85A1]"><i data-lucide="arrow-left"></i> 返回</button>
+                <div class="${state.selectedGuide.color} p-8 rounded-[2.5rem] text-white shadow-xl relative overflow-hidden">
+                    <h2 class="text-3xl font-black">${state.selectedGuide.title}</h2>
+                    <div class="absolute top-4 right-4 text-7xl opacity-20 transform rotate-12">${state.selectedGuide.img}</div>
+                </div>
+                <div class="space-y-4">
+                    <div class="bg-white p-4 rounded-3xl shadow-sm border border-gray-50 flex items-center gap-4">
+                        <div class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-white font-black">1</div>
+                        <div class="flex-1 font-bold">熱門首選推薦</div>
+                        <div class="text-[#FF85A1] font-black">9.9</div>
+                    </div>
+                </div>
+            </div>`;
+
+        // --- 行為處理 ---
+        window.addCalorie = async () => {
+            const name = document.getElementById('food-name').value;
+            const cal = document.getElementById('food-cal').value;
+            if (!name || !cal || !currentUser) return;
+            await addDoc(collection(db, 'artifacts', appId, 'users', currentUser.uid, 'calories'), { name, cal: parseInt(cal), time: Date.now() });
+            document.getElementById('food-name').value = '';
+            document.getElementById('food-cal').value = '';
+        };
+
+        window.addJournal = async () => {
+            const content = document.getElementById('journal-content').value;
+            if (!content || !currentUser) return;
+            await addDoc(collection(db, 'artifacts', appId, 'users', currentUser.uid, 'journals'), { content, date: new Date().toLocaleDateString(), time: Date.now() });
+            document.getElementById('journal-content').value = '';
+        };
+
+        window.addItinerary = async () => {
+            const title = prompt("請輸入行程名稱：");
+            if (!title || !currentUser) return;
+            await addDoc(collection(db, 'artifacts', appId, 'users', currentUser.uid, 'itineraries'), { title, date: new Date().toLocaleDateString() });
+        };
+
+        // --- 初始化 ---
+        window.onload = () => {
+            initAuth();
+            render();
+        };
+
+    </script>
+</body>
+</html>
